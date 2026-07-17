@@ -108,7 +108,9 @@
   .item{display:flex;align-items:center;gap:11px;padding:7px 11px;border-radius:4px;cursor:pointer;transition:background .18s}
   .item:hover{background:rgba(154,51,36,.1)}
   .item.active{background:rgba(255,0,0,.14);box-shadow:inset 2px 0 0 var(--sel)}
-  .item.active .nm::before{content:"✕ ";color:var(--sel)}
+  .item .closeX{display:none;flex:none;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:13px;line-height:1;color:var(--sel);cursor:pointer}
+  .item .closeX:hover{background:rgba(255,0,0,.18)}
+  .item.active .closeX{display:inline-flex}
   .item .rmap{width:48px;height:32px;flex:none;border:1px solid var(--ink-faint);border-radius:3px;display:block}
   .item .nm{font-family:var(--font-display);font-size:16px;font-weight:500;letter-spacing:.4px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .item .rg{font-size:15px;font-style:italic;color:var(--ink-soft);margin-top:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -751,6 +753,7 @@ function v3(lat,lng,radius){const phi=(90-lat)*Math.PI/180,th=(lng+180)*Math.PI/
   return new THREE.Vector3(-(radius*Math.sin(phi)*Math.cos(th)),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(th));}
 /* selected/focused marker glows this brighter red */
 const SELECTED_RED=0xff0000;
+const HOME_YELLOW=0xffd700;
 // lights so the 3D pins shade properly (the earth is MeshBasicMaterial, unaffected by lights)
 scene.add(new THREE.AmbientLight(0xffffff,0.66));
 const keyLight=new THREE.DirectionalLight(0xfff2d8,1.25);keyLight.position.set(3,4,5);scene.add(keyLight);
@@ -868,10 +871,14 @@ const listEl=document.getElementById('list');
 PLACES.forEach((p,i)=>{const el=document.createElement('div');el.className='item'+(p.home?' home':'');el.dataset.i=i;
   el.innerHTML=`<span class="idx">${String(i+1).padStart(2,'0')}</span>
     <canvas class="rmap" data-i="${i}" width="96" height="64"></canvas>
-    <span class="txt"><div class="nm">${p.name}</div><div class="rg">${p.region}</div></span>`;
-  el.addEventListener('click',()=>manualGo(i)); listEl.appendChild(el);});
+    <span class="txt"><div class="nm">${p.name}</div><div class="rg">${p.region}</div></span>
+    <span class="closeX" title="Deselect">✕</span>`;
+  el.addEventListener('click',()=>manualGo(i));
+  el.querySelector('.closeX').addEventListener('click',e=>{e.stopPropagation();deselectPlace();});
+  listEl.appendChild(el);});
 if(mapImg) drawAllRowMaps();
 function setActive(i){document.querySelectorAll('.item').forEach(e=>{const on=+e.dataset.i===i;e.classList.toggle('active',on);if(on)e.scrollIntoView({block:'nearest',behavior:'smooth'});});}
+function deselectPlace(){pulseI=-1;setActive(-1);}
 
 /* ---- flash card ---- */
 const flash=document.getElementById('flash'),flashInner=document.getElementById('flashInner');
@@ -1129,11 +1136,11 @@ function animate(now){requestAnimationFrame(animate);
     m.pin.scale.setScalar(m.pinBase*zoomScale);
     if(m.house){
       m.house.scale.setScalar(m.pinBase*zoomScale*(sel?1.4:1));
-      const hop=sel?1:(anySel?0.32:1),hCol=sel?SELECTED_RED:m.house.userData.baseColor,rCol=sel?SELECTED_RED:m.house.userData.roofColor;
+      const hop=sel?1:(anySel?0.32:1),hCol=sel?HOME_YELLOW:m.house.userData.baseColor,rCol=sel?HOME_YELLOW:m.house.userData.roofColor;
       const hInt=sel?0.7+0.3*Math.sin(t*4):0.28;
       m.house.userData.wallMat.color.setHex(hCol);m.house.userData.wallMat.emissive.setHex(hCol);m.house.userData.wallMat.emissiveIntensity=hInt;m.house.userData.wallMat.opacity=hop;
       m.house.userData.roofMat.color.setHex(rCol);m.house.userData.roofMat.emissive.setHex(rCol);m.house.userData.roofMat.emissiveIntensity=hInt*0.85;m.house.userData.roofMat.opacity=hop;
-      m.house.userData.glow.material.color.setHex(sel?SELECTED_RED:m.house.userData.baseColor);
+      m.house.userData.glow.material.color.setHex(HOME_YELLOW);
       m.house.userData.glow.material.opacity=sel?0.78:(anySel?0.1:0.22);
       m.house.userData.glow.scale.setScalar(sel?0.08:0.042);
     }
