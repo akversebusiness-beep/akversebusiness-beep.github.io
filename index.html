@@ -9,6 +9,10 @@
 <meta property="og:title" content="My Travel Atlas — A Chart of My Voyages" />
 <meta property="og:description" content="An antique 3D globe charting everywhere I've been." />
 <title>Travel Atlas — A Chart of My Voyages</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -327,6 +331,7 @@
   .loader-inner{display:flex;flex-direction:column;align-items:center;gap:24px}
   .loader-globe{position:relative;width:98px;height:98px;color:var(--ink)}
   .loader-globe svg{width:100%;height:100%;display:block;opacity:.78;animation:lspin 9s linear infinite;transform-origin:50% 50%}
+  .loader-globe img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%;opacity:.96;animation:lspin 9s linear infinite;transform-origin:50% 50%}
   @keyframes lspin{to{transform:rotate(360deg)}}
   .loader-orbit{position:absolute;inset:-7px;animation:lorbit 1.5s linear infinite;transform-origin:50% 50%}
   @keyframes lorbit{to{transform:rotate(360deg)}}
@@ -564,11 +569,7 @@
   <div id="splash">
     <div class="splash-card">
       <div class="splash-globe loader-globe" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1">
-          <circle cx="50" cy="50" r="40"/>
-          <ellipse cx="50" cy="50" rx="15" ry="40"/><ellipse cx="50" cy="50" rx="31" ry="40"/>
-          <line x1="10" y1="50" x2="90" y2="50"/><line x1="16" y1="29" x2="84" y2="29"/><line x1="16" y1="71" x2="84" y2="71"/>
-        </svg>
+        <img src="content/branding/face.png" alt="" />
         <span class="loader-orbit"><i class="loader-dot"></i></span>
       </div>
       <div class="s-kick">✦ Welcome to ✦</div>
