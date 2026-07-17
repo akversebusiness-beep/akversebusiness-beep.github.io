@@ -19,16 +19,16 @@
 <style>
   :root{
     --ink:#16181d; --ink-soft:#5b616c; --ink-faint:rgba(22,24,29,.45); --line:rgba(22,24,29,.1);
-    --accent:#16181d; --sel:#e8392b; --brass:#6b7280;
+    --accent:#16181d; --sel:#dc143c; --brass:#6b7280;
     --edge:rgba(22,24,29,.14);
     --glass:rgba(255,255,255,.82);
     --grid:rgba(22,24,29,.06);
     --soft:0 16px 40px -22px rgba(20,24,40,.22);
-    --font-display:"Space Grotesk", system-ui, -apple-system, sans-serif;
-    --font-body:"Hanken Grotesk", system-ui, -apple-system, sans-serif;
+    --font-display:"Jersey 10", "Space Grotesk", system-ui, -apple-system, sans-serif;
+    --font-body:"Jersey 10", "Hanken Grotesk", system-ui, -apple-system, sans-serif;
     --font-pixel:"Jersey 10", "Space Grotesk", monospace;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
+  *{box-sizing:border-box;margin:0;padding:0;font-synthesis:none}
   html,body{height:100%;width:100%;overflow:hidden}
   body{font-family:var(--font-body);font-size:16px;color:var(--ink);
     background-color:#fafbfc;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:44px 44px;
@@ -107,7 +107,7 @@
   .list::-webkit-scrollbar-thumb{background:var(--ink-faint);border-radius:9px;border:3px solid transparent;background-clip:padding-box}
   .item{display:flex;align-items:center;gap:11px;padding:7px 11px;border-radius:4px;cursor:pointer;transition:background .18s}
   .item:hover{background:rgba(154,51,36,.1)}
-  .item.active{background:rgba(232,57,43,.14);box-shadow:inset 2px 0 0 var(--sel)}
+  .item.active{background:rgba(220,20,60,.14);box-shadow:inset 2px 0 0 var(--sel)}
   .item .rmap{width:48px;height:32px;flex:none;border:1px solid var(--ink-faint);border-radius:3px;display:block}
   .item .nm{font-family:var(--font-display);font-size:14px;font-weight:500;letter-spacing:.4px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .item .rg{font-size:13px;font-style:italic;color:var(--ink-soft);margin-top:-1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -749,7 +749,7 @@ function drawAllRowMaps(){ document.querySelectorAll('canvas.rmap').forEach(cv=>
 function v3(lat,lng,radius){const phi=(90-lat)*Math.PI/180,th=(lng+180)*Math.PI/180;
   return new THREE.Vector3(-(radius*Math.sin(phi)*Math.cos(th)),radius*Math.cos(phi),radius*Math.sin(phi)*Math.sin(th));}
 /* selected/focused marker glows this brighter red */
-const SELECTED_RED=0xe8392b;
+const SELECTED_RED=0xdc143c;
 // lights so the 3D pins shade properly (the earth is MeshBasicMaterial, unaffected by lights)
 scene.add(new THREE.AmbientLight(0xffffff,0.66));
 const keyLight=new THREE.DirectionalLight(0xfff2d8,1.25);keyLight.position.set(3,4,5);scene.add(keyLight);
