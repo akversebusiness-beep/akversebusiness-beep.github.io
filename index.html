@@ -709,11 +709,18 @@ const keyLight=new THREE.DirectionalLight(0xfff2d8,1.25);keyLight.position.set(3
 const rimLight=new THREE.DirectionalLight(0xd6e4ff,0.4);rimLight.position.set(-4,-1.5,-3);scene.add(rimLight);
 
 const UP=new THREE.Vector3(0,1,0);
-const headGeo=new THREE.SphereGeometry(0.0072,20,20);
+const headGeo=new THREE.SphereGeometry(0.008,20,20);
 const stemGeo=new THREE.CylinderGeometry(0.0022,0.0005,0.015,12);stemGeo.translate(0,0.0075,0); // base y=0 → top y=0.015
 const haloGeo=new THREE.RingGeometry(0.006,0.0085,40),pulseGeo=new THREE.RingGeometry(0.008,0.011,44);
 const homeRingGeo=new THREE.RingGeometry(0.013,0.0155,48);
 function shade(hex){const c=new THREE.Color(hex);c.multiplyScalar(0.72);return c;}
+/* soft additive glow sprite — cheap "bloom" for the matte markers */
+function makeGlowTexture(){const s=128,c=document.createElement('canvas');c.width=c.height=s;const g=c.getContext('2d');
+  const rad=g.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  rad.addColorStop(0,'rgba(255,255,255,1)');rad.addColorStop(0.35,'rgba(255,255,255,0.5)');rad.addColorStop(1,'rgba(255,255,255,0)');
+  g.fillStyle=rad;g.fillRect(0,0,s,s);return new THREE.CanvasTexture(c);}
+const GLOW_TEX=makeGlowTexture();
+function makeGlow(color,size,opacity){const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:GLOW_TEX,color,transparent:true,opacity,blending:THREE.AdditiveBlending,depthWrite:false}));spr.scale.setScalar(size);return spr;}
 /* ---- organic "spilled liquid" stains + a 3D home house ---- */
 function makeSpillTexture(seed){
   const s=128,c=document.createElement('canvas');c.width=c.height=s;const g=c.getContext('2d');const cx=s/2,cy=s/2;
@@ -739,12 +746,14 @@ function makeSpill(lat,lng,hex,opacity){
   const m=new THREE.Mesh(spillGeo,new THREE.MeshBasicMaterial({map:tex,color:hex,transparent:true,opacity,depthWrite:false}));
   m.position.copy(surf);m.lookAt(out);m.rotateZ(Math.random()*Math.PI*2);m.scale.setScalar(0.78+Math.random()*0.6);
   return m;}
-function makeHouse(){const g=new THREE.Group();
-  const wallMat=new THREE.MeshStandardMaterial({color:0xe6bf48,roughness:0.8,metalness:0,transparent:true});
-  const roofMat=new THREE.MeshStandardMaterial({color:0xb07d24,roughness:0.7,metalness:0,transparent:true});
-  const body=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.015,0.02),wallMat);body.position.y=0.0075;g.add(body);
-  const roof=new THREE.Mesh(new THREE.ConeGeometry(0.0168,0.012,4),roofMat);roof.position.y=0.021;roof.rotation.y=Math.PI/4;g.add(roof);
-  const door=new THREE.Mesh(new THREE.BoxGeometry(0.006,0.008,0.0012),new THREE.MeshStandardMaterial({color:0x5b3d22,roughness:.8,transparent:true}));door.position.set(0,0.004,0.0101);g.add(door);
+function makeHouse(accent){const g=new THREE.Group();const base=accent||0xc8902f,roofCol=shade(base).getHex();
+  // simple matte glowing house: a cube body + a pyramid roof, nothing else
+  const wallMat=new THREE.MeshStandardMaterial({color:base,roughness:0.85,metalness:0,emissive:base,emissiveIntensity:0.28,transparent:true});
+  const roofMat=new THREE.MeshStandardMaterial({color:roofCol,roughness:0.8,metalness:0,emissive:roofCol,emissiveIntensity:0.28,transparent:true});
+  const body=new THREE.Mesh(new THREE.BoxGeometry(0.018,0.018,0.018),wallMat);body.position.y=0.009;g.add(body);
+  const roof=new THREE.Mesh(new THREE.ConeGeometry(0.014,0.012,4),roofMat);roof.position.y=0.024;roof.rotation.y=Math.PI/4;g.add(roof);
+  const glow=makeGlow(base,0.05,0.3);glow.position.y=0.014;g.add(glow);
+  g.userData={wallMat,roofMat,glow,baseColor:base,roofColor:roofCol};
   return g;}
 const markers=[];
 PLACES.forEach((p,i)=>{const home=!!p.home,accent=home?0xc8902f:0x9a3324,haloCol=home?0xfff1cf:0xf3e8cd;
@@ -753,17 +762,17 @@ PLACES.forEach((p,i)=>{const home=!!p.home,accent=home?0xc8902f:0x9a3324,haloCol
   const halo=new THREE.Mesh(haloGeo,new THREE.MeshBasicMaterial({color:haloCol,transparent:true,opacity:0.9,side:THREE.DoubleSide}));halo.position.copy(flat);halo.lookAt(out);globe.add(halo);
   const pulse=new THREE.Mesh(pulseGeo,new THREE.MeshBasicMaterial({color:accent,transparent:true,opacity:0,side:THREE.DoubleSide}));pulse.position.copy(flat);pulse.lookAt(out);globe.add(pulse);
   if(home){const hr=new THREE.Mesh(homeRingGeo,new THREE.MeshBasicMaterial({color:accent,transparent:true,opacity:0.7,side:THREE.DoubleSide}));hr.position.copy(flat);hr.lookAt(out);globe.add(hr);}
-  // upright 3D pin (needle + bead) standing along the surface normal
+  // simple matte glowing bead marker — sits flush on the surface, no needle
   const pin=new THREE.Group();pin.position.copy(surf);pin.quaternion.setFromUnitVectors(UP,dir);if(home)pin.scale.setScalar(1.18);globe.add(pin);
-  const stem=new THREE.Mesh(stemGeo,new THREE.MeshStandardMaterial({color:shade(accent),roughness:0.95,metalness:0,transparent:true}));pin.add(stem);
-  const dot=new THREE.Mesh(headGeo,new THREE.MeshStandardMaterial({color:accent,roughness:0.92,metalness:0,emissive:0x000000,transparent:true}));dot.position.y=0.0165;pin.add(dot);
+  const dot=new THREE.Mesh(headGeo,new THREE.MeshStandardMaterial({color:accent,roughness:0.85,metalness:0,emissive:accent,emissiveIntensity:0.32,transparent:true}));dot.position.y=0.006;pin.add(dot);
+  const glow=makeGlow(accent,0.042,0.3);glow.position.y=0.006;pin.add(glow);
   const hit=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.copy(surf);hit.userData={i};globe.add(hit);
   // spilled stain under the marker: brown for visited, yellow for home
   const spillBase=home?0.55:0.5;
   const spill=makeSpill(p.lat,p.lng,home?0xc8352a:0x6b4a2a,spillBase);globe.add(spill);
   let house=null;
-  if(home){pin.visible=false;house=makeHouse();house.position.copy(surf);house.quaternion.setFromUnitVectors(UP,dir);globe.add(house);}
-  markers.push({place:p,pin,dot,stem,halo,pulse,hit,spill,house,spillBase,accent,base:home?1.5:1,pinBase:home?1.18:1});});
+  if(home){pin.visible=false;house=makeHouse(accent);house.position.copy(surf);house.quaternion.setFromUnitVectors(UP,dir);globe.add(house);}
+  markers.push({place:p,pin,dot,glow,halo,pulse,hit,spill,house,spillBase,accent,base:home?1.5:1,pinBase:home?1.18:1});});
 
 /* (India homeland glow removed) */
 
@@ -1050,25 +1059,35 @@ function animate(now){requestAnimationFrame(animate);
   const anySel = pulseI>=0 || selDream>=0;
   markers.forEach((m,i)=>{
     const sel=i===pulseI;
-    if(sel){const c=(t*0.7)%1;
+    if(sel){const c=(t*0.7)%1,glowPulse=0.75+0.2*Math.sin(t*4);
       m.dot.material.color.setHex(SELECTED_RED);
-      m.dot.material.emissive.setHex(SELECTED_RED);m.dot.material.emissiveIntensity=0.55+0.25*Math.sin(t*4);
-      m.stem.material.color.setHex(SELECTED_RED);
-      m.dot.material.opacity=1;m.stem.material.opacity=1;
+      m.dot.material.emissive.setHex(SELECTED_RED);m.dot.material.emissiveIntensity=0.7+0.3*Math.sin(t*4);
+      m.dot.material.opacity=1;
+      m.glow.material.color.setHex(SELECTED_RED);m.glow.material.opacity=glowPulse;m.glow.scale.setScalar(0.078*(1+0.15*Math.sin(t*4)));
       m.pulse.material.color.setHex(SELECTED_RED);
       m.pulse.material.opacity=(1-c)*0.6;m.pulse.scale.setScalar((1+c*2.0)*zoomScale);
       const grow=1+(1-Math.min((now-pulseT)/600,1))*0.5;m.dot.scale.setScalar(m.base*2.5*grow);
       m.spill.material.opacity=Math.min(0.95,m.spillBase+0.3+0.14*Math.sin(t*3));
       m.halo.material.opacity=0.95;
-    } else {const dim=anySel;
-      m.dot.material.color.setHex(m.accent);m.dot.material.emissive.setHex(0x000000);m.stem.material.color.copy(shade(m.accent));
-      m.pulse.material.opacity=0;m.pulse.scale.setScalar(zoomScale);m.dot.scale.setScalar(m.base*(i===hoverI?1.7:1));
-      m.dot.material.opacity=dim?0.3:1;m.stem.material.opacity=dim?0.3:1;
+    } else {const dim=anySel,hov=i===hoverI;
+      m.dot.material.color.setHex(m.accent);m.dot.material.emissive.setHex(m.accent);m.dot.material.emissiveIntensity=hov?0.55:0.32;
+      m.pulse.material.opacity=0;m.pulse.scale.setScalar(zoomScale);m.dot.scale.setScalar(m.base*(hov?1.7:1));
+      m.dot.material.opacity=dim?0.3:1;
+      m.glow.material.color.setHex(m.accent);m.glow.material.opacity=dim?0.12:(hov?0.55:0.3);m.glow.scale.setScalar(hov?0.058:0.042);
       m.spill.material.opacity=dim?m.spillBase*0.3:m.spillBase;
       m.halo.material.opacity=dim?0.22:0.9;
     }
     m.pin.scale.setScalar(m.pinBase*zoomScale);
-    if(m.house){m.house.scale.setScalar(m.pinBase*zoomScale*(sel?1.4:1));const hop=sel?1:(anySel?0.32:1);m.house.traverse(o=>{if(o.material)o.material.opacity=hop;});}
+    if(m.house){
+      m.house.scale.setScalar(m.pinBase*zoomScale*(sel?1.4:1));
+      const hop=sel?1:(anySel?0.32:1),hCol=sel?SELECTED_RED:m.house.userData.baseColor,rCol=sel?SELECTED_RED:m.house.userData.roofColor;
+      const hInt=sel?0.7+0.3*Math.sin(t*4):0.28;
+      m.house.userData.wallMat.color.setHex(hCol);m.house.userData.wallMat.emissive.setHex(hCol);m.house.userData.wallMat.emissiveIntensity=hInt;m.house.userData.wallMat.opacity=hop;
+      m.house.userData.roofMat.color.setHex(rCol);m.house.userData.roofMat.emissive.setHex(rCol);m.house.userData.roofMat.emissiveIntensity=hInt*0.85;m.house.userData.roofMat.opacity=hop;
+      m.house.userData.glow.material.color.setHex(sel?SELECTED_RED:m.house.userData.baseColor);
+      m.house.userData.glow.material.opacity=sel?0.78:(anySel?0.12:0.3);
+      m.house.userData.glow.scale.setScalar(sel?0.08:0.05);
+    }
     m.halo.scale.setScalar(zoomScale);
   });
   if(dreamsOn){const tw=Math.sin(t*2.4);dreamMarkers.forEach((d,di)=>{const sel=di===selDream,dim=anySel&&!sel;
