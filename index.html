@@ -266,12 +266,15 @@
   .mk-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
     background:transparent;color:var(--ink-soft);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
   .mk-x:hover{background:rgba(63,47,29,.08);color:var(--ink)}
+  .mk-top{display:flex;align-items:center;gap:8px}
+  .mk-top-ic{font-size:15px;color:var(--accent);line-height:1}
   .mk-card h2{font-family:var(--font-display);font-weight:500;font-size:29px;margin:5px 0 0;letter-spacing:.4px;color:var(--ink)}
   .mk-lede{font-size:17.5px;line-height:1.55;color:var(--ink-soft);margin:11px 0 4px;text-wrap:pretty}
-  .mk-steps{margin:14px 0 0;padding:0 0 0 22px;display:flex;flex-direction:column;gap:9px}
-  .mk-steps li{font-size:16.5px;line-height:1.5;color:var(--ink-soft);padding-left:4px;text-wrap:pretty}
+  .mk-steps{margin:16px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .mk-steps li{display:flex;align-items:flex-start;gap:12px;font-size:16.5px;line-height:1.5;color:var(--ink-soft);text-wrap:pretty}
   .mk-steps li b{color:var(--ink);font-weight:600}
-  .mk-steps li::marker{color:var(--accent);font-family:var(--font-display);font-weight:600}
+  .mk-step-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--font-display);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .mk-step-tx{flex:1;min-width:0}
   .mk-dim{color:var(--ink-faint);font-style:italic}
   .mk-card code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px;background:rgba(63,47,29,.08);
     border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:#6b3b2a;white-space:nowrap}
@@ -284,12 +287,14 @@
   .mk-copy:hover{background:#000}
   .mk-copy.ok{background:#1f7a4d;border-color:#155c39}
   .mk-ic{font-size:17px}
+  .mk-ic.mk-gh{display:inline-flex}
   .mk-ghost{background:transparent;color:var(--ink);border:1px solid var(--edge)}
   .mk-ghost:hover{background:rgba(63,47,29,.06)}
-  .mk-note{font-size:14.5px;line-height:1.5;color:var(--ink-faint);margin:14px 0 0;text-wrap:pretty}
-  .mk-about{display:flex;gap:16px;align-items:flex-start;margin-top:22px;padding-top:20px;border-top:1px dashed var(--line)}
+  .mk-note{font-size:14.5px;line-height:1.5;color:var(--ink-soft);margin:16px 0 0;text-wrap:pretty;background:rgba(63,47,29,.05);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 12px}
+  .mk-note::before{content:"✎ ";color:var(--accent);font-weight:600}
+  .mk-about{display:flex;gap:16px;align-items:flex-start;margin-top:22px;padding:18px;border-radius:12px;background:rgba(63,47,29,.045);border:1px solid var(--line)}
   .mk-about-dp{flex:none;width:74px;height:74px;border-radius:50%;overflow:hidden;position:relative;
-    border:1px solid var(--edge);background:rgba(63,47,29,.06);display:flex;align-items:center;justify-content:center}
+    border:1px solid var(--edge);background:rgba(63,47,29,.06);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -8px rgba(20,24,40,.4)}
   .mk-about-dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
   .mk-about-dp img.loaded{opacity:1}
   .mk-about-dp span{font-family:var(--font-display);font-weight:600;font-size:29px;color:var(--ink-faint)}
@@ -300,7 +305,8 @@
   .mk-about-link{display:inline-block;margin-top:9px;font-family:var(--font-display);font-weight:600;font-size:14px;letter-spacing:.3px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--edge);padding-bottom:1px}
   .mk-about-link:hover{color:var(--accent);border-color:var(--accent)}
   @media (max-width:520px){.mk-card{padding:22px 20px 20px}.mk-card h2{font-size:25px}.mk-btn{flex-basis:100%}
-    .mk-about{gap:13px}.mk-about-dp{width:60px;height:60px}.mk-about-dp span{font-size:24px}}
+    .mk-about{gap:13px;padding:14px}.mk-about-dp{width:60px;height:60px}.mk-about-dp span{font-size:24px}
+    .mk-step-n{width:21px;height:21px;font-size:12px}}
 
   /* ---- splash / intro ---- */
   #splash{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
@@ -531,18 +537,18 @@
   <div class="mk" id="mk" aria-hidden="true">
     <div class="mk-card" id="mkCard" role="dialog" aria-modal="true" aria-labelledby="mkTitle">
       <button class="mk-x" id="mkX" aria-label="Close">✕</button>
-      <div class="kick">Cartographer's Notes</div>
+      <div class="mk-top"><span class="mk-top-ic">❖</span><div class="kick">Cartographer's Notes</div></div>
       <h2 id="mkTitle">Make your own atlas</h2>
       <p class="mk-lede">This whole globe is a single, self-contained HTML file — no build step, no server. Copy it, change a few lines, and it's yours.</p>
       <ol class="mk-steps">
-        <li><b>Copy the full code</b> with the button below (or grab it from the repo).</li>
-        <li>Paste it into a new file named <code>index.html</code>.</li>
-        <li>Find the <code>EDIT HERE</code> block near the top of the script — set your <code>GOAL</code>, your <code>REPO_URL</code>, and replace the <code>PLACES</code> list with your own <span class="mk-dim">{ name, region, date, lat, lng }</span> entries (mark your base with <code>home:true</code>).</li>
-        <li>Open the file in any browser — done. To publish, push it to GitHub and enable <b>Pages</b>.</li>
+        <li><span class="mk-step-n">1</span><span class="mk-step-tx"><b>Copy the full code</b> with the button below (or grab it from the repo).</span></li>
+        <li><span class="mk-step-n">2</span><span class="mk-step-tx">Paste it into a new file named <code>index.html</code>.</span></li>
+        <li><span class="mk-step-n">3</span><span class="mk-step-tx">Find the <code>EDIT HERE</code> block near the top of the script — set your <code>GOAL</code>, your <code>REPO_URL</code>, and replace the <code>PLACES</code> list with your own <span class="mk-dim">{ name, region, date, lat, lng }</span> entries (mark your base with <code>home:true</code>).</span></li>
+        <li><span class="mk-step-n">4</span><span class="mk-step-tx">Open the file in any browser — done. To publish, push it to GitHub and enable <b>Pages</b>.</span></li>
       </ol>
       <div class="mk-actions">
         <button class="mk-btn mk-copy" id="mkCopy"><span class="mk-ic">❏</span><span id="mkCopyTx">Copy full code</span></button>
-        <a class="mk-btn mk-ghost" id="mkRepo" target="_blank" rel="noopener">View repo ↗</a>
+        <a class="mk-btn mk-ghost" id="mkRepo" target="_blank" rel="noopener"><span class="mk-ic mk-gh"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></span><span>View repo ↗</span></a>
       </div>
       <p class="mk-note" id="mkNote">Tip: set <code>REPO_URL</code> in the code so this button points at your own repository.</p>
 
