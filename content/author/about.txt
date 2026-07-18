@@ -1,7 +1,7 @@
 name: Aayush
 role: Traveler & Cartographer
 location: Jaipur, India
-link: https://github.com/akversebusiness-beep
+link: https://github.com/itsAayush2004
 linkLabel: GitHub ↗
 
 bio:

@@ -10,7 +10,7 @@
      set lat/lng (the marker location), and make the folder.
    ============================================================ */
 const GOAL = 100;
-const REPO_URL = "https://github.com/akversebusiness-beep";
+const REPO_URL = "https://github.com/itsAayush2004";
 
 const PLACES = [
   { slug:"jaipur",      name:"Jaipur",      region:"Rajasthan, India",   date:"Home",     home:true, lat:26.9124, lng:75.7873, photos:4,
