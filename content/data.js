@@ -65,6 +65,14 @@ const PLACES = [
     story:"Gateway to the Nilgiris — textile-mill city at the foot of the hills, filter coffee, and warm Tamil hospitality." },
   { slug:"ooty",        name:"Ooty",        region:"Tamil Nadu, India",  date:"Jun 2026", lat:11.4102, lng:76.6950, photos:4,
     story:"Queen of the hill stations — eucalyptus air, the rack railway through tea slopes, and rowboats on the lake." },
+  { slug:"hyderabad",   name:"Hyderabad",   region:"Telangana, India",       date:"Jul 2026", lat:17.3841, lng:78.4564, photos:4,
+    story:"Charminar's four minarets against the sky, biryani steam curling out of Old City kitchens, and the whisper-gallery echo at Golconda Fort." },
+  { slug:"pathankot",   name:"Pathankot",   region:"Punjab, India",          date:"Jul 2026", lat:32.2731, lng:75.6526, photos:4,
+    story:"The road-and-rail gateway to the hills — a border-town stopover before the highway climbed into Himachal." },
+  { slug:"mcleod-ganj", name:"McLeod Ganj", region:"Himachal Pradesh, India",date:"Jul 2026", lat:32.2426, lng:76.3213, photos:4,
+    story:"Little Lhasa in the clouds — prayer wheels spinning outside the Dalai Lama's temple, and momos in the mountain mist." },
+  { slug:"triund",      name:"Triund",      region:"Himachal Pradesh, India",date:"Jul 2026", lat:32.2617, lng:76.3544, photos:4,
+    story:"A ridge-top camp above the tree line — the full snow wall of the Dhauladhar range at sunset, and stars until the cold won." },
 ];
 
 /* ---- dream / wishlist destinations (shown as blue markers) ---- */
