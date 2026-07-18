@@ -59,7 +59,7 @@
     backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
     box-shadow:var(--soft);
     transition:top .45s cubic-bezier(.2,.8,.2,1)}
-  body.promo-open .goal{top:74px}
+  body.promo-open .goal{top:112px}
   .ring{position:relative;width:86px;height:86px;flex:none}
   .ring svg{transform:rotate(-90deg);width:100%;height:100%;display:block}
   .ring .track{fill:none;stroke:rgba(22,24,29,.1);stroke-width:6}
@@ -253,6 +253,16 @@
   .promo-x{flex:none;width:18px;height:18px;border-radius:50%;border:1px solid rgba(247,236,212,.4);background:transparent;color:#f7ecd4;font-size:12px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
   .promo-x:hover{background:rgba(0,0,0,.18)}
 
+  /* ---- marker colour key (sits under the promo pill) ---- */
+  .mkey{position:fixed;top:62px;left:30px;z-index:17;display:flex;align-items:center;gap:13px;
+    padding:7px 15px;background:var(--glass);border:1px solid var(--edge);border-radius:999px;
+    box-shadow:var(--soft);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+    opacity:0;transform:translateY(-8px);pointer-events:none;
+    transition:opacity .4s ease,transform .4s cubic-bezier(.2,.9,.25,1),top .45s cubic-bezier(.2,.8,.2,1)}
+  .mkey.show{opacity:1;transform:translateY(0)}
+  .mkey-item{display:flex;align-items:center;gap:6px;font-family:var(--font-display);font-size:13px;letter-spacing:.2px;color:var(--ink-soft);white-space:nowrap}
+  .mkey-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.6) inset}
+
   /* ---- "make your own" modal ---- */
   .mk{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;
     background:rgba(40,28,16,.46);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
@@ -359,7 +369,9 @@
   @media (max-width:720px){
     .goal{top:calc(14px + env(safe-area-inset-top));left:calc(14px + env(safe-area-inset-left));padding:12px 16px 12px 12px;gap:12px}
     .promo{top:calc(12px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));right:auto}
-    body.promo-open .goal{top:calc(64px + env(safe-area-inset-top))}
+    .mkey{top:calc(50px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));gap:9px;padding:6px 12px}
+    .mkey-item{font-size:11.5px}
+    body.promo-open .goal{top:calc(98px + env(safe-area-inset-top))}
     .ring{width:60px;height:60px}.ring .num b{font-size:23px}.ring .num span{font-size:11px}
     .goal-meta h1{font-size:19px}.goal-meta .togo{font-size:16px;max-width:150px}
     .compass{display:none}
@@ -533,6 +545,12 @@
     <span class="promo-tx">Make your own ↗</span>
     <button class="promo-x" id="promoX" aria-label="Dismiss">✕</button>
   </a>
+
+  <div class="mkey" id="mkey" aria-hidden="true">
+    <span class="mkey-item"><i class="mkey-dot" style="background:#ffd700"></i>Home</span>
+    <span class="mkey-item"><i class="mkey-dot" style="background:#ff0000"></i>Visited</span>
+    <span class="mkey-item"><i class="mkey-dot" style="background:#2f6fb0"></i>Dream</span>
+  </div>
 
   <div class="mk" id="mk" aria-hidden="true">
     <div class="mk-card" id="mkCard" role="dialog" aria-modal="true" aria-labelledby="mkTitle">
@@ -1230,14 +1248,14 @@ applyLayout(); camera.position.z=baseZ;
 /* ---- "make your own" promo (top-left) ---- */
 /* ---- "make your own" promo + modal ---- */
 (function(){
-  const promo=document.getElementById('promo');
+  const promo=document.getElementById('promo'), mkey=document.getElementById('mkey');
   const mk=document.getElementById('mk'), card=document.getElementById('mkCard');
   const repoBtn=document.getElementById('mkRepo'), copyBtn=document.getElementById('mkCopy');
   const copyTx=document.getElementById('mkCopyTx'), note=document.getElementById('mkNote');
   const hasRepo=REPO_URL && !/your-username/.test(REPO_URL);
   if(hasRepo){ repoBtn.href=REPO_URL; } else { repoBtn.style.display='none'; }
-  setTimeout(()=>{ promo.classList.add('show'); document.body.classList.add('promo-open'); }, 1400);
-  function dismiss(e){ if(e){e.preventDefault();e.stopPropagation();} promo.classList.remove('show'); document.body.classList.remove('promo-open'); }
+  setTimeout(()=>{ promo.classList.add('show'); if(mkey){mkey.classList.add('show');mkey.setAttribute('aria-hidden','false');} document.body.classList.add('promo-open'); }, 1400);
+  function dismiss(e){ if(e){e.preventDefault();e.stopPropagation();} promo.classList.remove('show'); if(mkey){mkey.classList.remove('show');mkey.setAttribute('aria-hidden','true');} document.body.classList.remove('promo-open'); }
   document.getElementById('promoX').addEventListener('click',dismiss);
 
   /* ---- About the author: editable from content/author/about.txt + dp.* ---- */
